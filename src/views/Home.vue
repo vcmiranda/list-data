@@ -2,7 +2,7 @@
   <q-page class="flex flex-center">
     <q-table
       title="Galaxy"
-      :data="planets"
+      :data="tableData"
       :columns="columns"
       :pagination.sync="pagination"
       :loading="loading"
@@ -37,14 +37,17 @@
         </q-tr>
       </template>
     </q-table>
+    <q-btn @click="loadPlanets()">Get Planets</q-btn>
   </q-page>
 </template>
 
 <script>
 import { mapState, mapActions } from 'vuex';
+import QBtn from 'quasar-framework/src/components/btn/QBtn';
 
 export default {
   name: 'PageHome',
+  components: { QBtn },
   data: () => ({
     pagination: {
       rowsPerPage: 10,
@@ -78,9 +81,10 @@ export default {
         style: 'width: 100px',
       },
     ],
+    tableData: [],
   }),
   mounted() {
-    this.GET_PLANETS();
+    this.loadPlanets();
   },
   computed: {
     ...mapState([
@@ -90,8 +94,20 @@ export default {
   },
   methods: {
     ...mapActions([
-      'GET_PLANETS',
+      'getPlanets',
+      'getPeople',
     ]),
+    loadPlanets() {
+      this.dbGetBulk('list-data')
+        .then((res) => {
+          this.tableData = res.rows.sort((a, b) => a.doc.name.localeCompare(b.doc.name)).map((planet, i) => ({
+            id: i + 1,
+            name: planet.doc.name,
+            residents: planet.doc.residents,
+          }));
+        })
+        .catch(err => console.log(err));
+    },
   },
 };
 </script>

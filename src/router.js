@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import Router from 'vue-router';
-import App from './App.vue';
-import Home from './views/Home.vue';
+import store from '@/store';
+import pouchDB from '@/plugins/pouchdb';
 
 Vue.use(Router);
 
@@ -10,12 +10,17 @@ export default new Router({
   routes: [
     {
       path: '/',
-      component: App,
+      component: () => import('./App.vue'),
       children: [
         {
           path: '',
           name: 'home',
-          component: Home,
+          component: () => import('./views/Home.vue'),
+          beforeEnter: (to, from, next) => {
+            pouchDB.dbDelete('list-data')
+              .then(() => store.dispatch('getPlanets'))
+              .then(() => next());
+          },
         },
       ],
     },

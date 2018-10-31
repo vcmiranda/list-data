@@ -9,10 +9,12 @@
   },
   "dependencies": {
     "axios": "^0.18.0",
+    "pouchdb": "^7.0.0",
     "quasar": "0.0.18",
     "quasar-extras": "^2.0.4",
     "quasar-framework": "^0.17.0",
     "vue": "^2.5.17",
+    "vue-pouch-db": "^2.0.2",
     "vue-router": "^3.0.1",
     "vuex": "^3.0.1"
   },
