@@ -1,6 +1,5 @@
 import Vue from 'vue';
 import Quasar from 'quasar';
-import PouchDB from 'pouchdb';
 import 'quasar-extras/roboto-font';
 import 'quasar-extras/material-icons';
 import 'quasar-extras/fontawesome';
@@ -15,16 +14,16 @@ Vue.use(Quasar, {
   config: {},
 });
 
-Vue.prototype.$PouchDB = PouchDB;
-window.$PouchDB = PouchDB;
-
 Vue.config.productionTip = false;
 
 new Vue({
   router,
   store,
   beforeDestroy() {
-    pouchDB.dbClose('list-data');
+    Promise.all([
+      pouchDB.dbClose('planets'),
+      pouchDB.dbClose('people'),
+    ]);
   },
   render: h => h(App),
 }).$mount('#app');

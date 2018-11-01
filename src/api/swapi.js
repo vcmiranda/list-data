@@ -1,8 +1,14 @@
 export default {
-  getPlanets() {
+  getPlanets(page) {
+    if (page) {
+      return window.axios.get(`/planets/?page=${page}`);
+    }
     return window.axios.get('/planets/');
   },
-  getPeople() {
+  getPeople(page) {
+    if (page) {
+      return window.axios.get(`/people/?page=${page}`);
+    }
     return window.axios.get('/people/');
   },
 };

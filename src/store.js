@@ -18,26 +18,70 @@ export default new Vuex.Store({
     getPlanets({ commit }) {
       commit('setLoading', true);
       return dataAPI.getPlanets()
-        .then(ret => pouchDB.dbSetBulk('list-data', ret.data.results))
+        .then((retExt) => {
+          let page = '';
+          let planets = [];
+          let p = Promise.resolve();
+          for (let i = 0; i < Math.ceil(retExt.data.count / 10); i += 1) {
+            p = p.then(() => new Promise((resolve, reject) => {
+              dataAPI.getPlanets(page)
+                .then((retInt) => {
+                  retInt.data.results.forEach((planet) => {
+                    planets.push(planet);
+                  });
+                  if (retInt.data.next) {
+                    page = retInt.data.next.split('?page=')[1];
+                  }
+                  resolve();
+                })
+                .catch(err => reject(err));
+            }));
+          }
+          p = p.then(() => pouchDB.dbGetBulk('people'))
+            .then((ret) => {
+              planets = planets.map((planet) => {
+                planet.residents = planet.residents.map(resident => ({
+                  url: resident,
+                  name: ret.rows.find(person => person.doc.url === resident).doc.name,
+                }));
+                return planet;
+              });
+              return { planets };
+            });
+          return p;
+        })
+        .then(ret => pouchDB.dbSetBulk('planets', ret.planets))
         .catch(err => console.log(err))
         .finally(() => commit('setLoading', false));
     },
-    getPeople({ commit }, payload) {
+    getPeople({ commit }) {
       commit('setLoading', true);
-      console.log(payload);
-      // payload = payload.map(person => )
-      // let p = Promise.resolve();
-      // for (let i = 0; i < transfers.length; i += 1) {
-      //   p = p.then(() => new Promise((resolve, reject) => {
-      //     dataAPI.getPeople()
-      //       .then((ret) => {
-      //         console.log(ret);
-      //         resolve();
-      //       })
-      //       .catch(err => reject(err))
-      // })}
-      // p = p.then(() => ({ successTransfers, errorsTransfers }));
-      // return p;
+      return dataAPI.getPeople()
+        .then((retExt) => {
+          let page = '';
+          const people = [];
+          let p = Promise.resolve();
+          for (let i = 0; i < Math.ceil(retExt.data.count / 10); i += 1) {
+            p = p.then(() => new Promise((resolve, reject) => {
+              dataAPI.getPeople(page)
+                .then((retInt) => {
+                  retInt.data.results.forEach((person) => {
+                    people.push(person);
+                  });
+                  if (retInt.data.next) {
+                    page = retInt.data.next.split('?page=')[1];
+                  }
+                  resolve();
+                })
+                .catch(err => reject(err));
+            }));
+          }
+          p = p.then(() => ({ people }));
+          return p;
+        })
+        .then(ret => pouchDB.dbSetBulk('people', ret.people))
+        .catch(err => console.log(err))
+        .finally(() => commit('setLoading', false));
     },
   },
 });

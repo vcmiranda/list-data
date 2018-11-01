@@ -1,5 +1,8 @@
 import Vue from 'vue';
 import PouchDB from 'pouchdb';
+import PouchDBFind from 'pouchdb-find';
+
+PouchDB.plugin(PouchDBFind);
 
 const methods = {
   // Create or Connect DB
@@ -21,6 +24,10 @@ const methods = {
   // Close DB
   dbClose(dbName) {
     return this.dbConnect(dbName).close();
+  },
+  // Find doc
+  dbFind(dbName, params) {
+    return this.dbConnect(dbName).find(params);
   },
 };
 

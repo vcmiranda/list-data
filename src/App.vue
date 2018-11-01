@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <q-layout>
+    <q-layout view="HHH LpR lFf">
       <q-layout-header>
         <q-toolbar color="secondary">
           <q-btn flat round dense icon="menu"></q-btn>
@@ -16,6 +16,3 @@
     </q-layout>
   </div>
 </template>
-
-<style>
-</style>
