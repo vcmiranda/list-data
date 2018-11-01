@@ -8,6 +8,8 @@
 
 ## Project setup
 ```
+git clone https://github.com/vcmiranda/list-data.git
+cd list-data
 npm install
 ```
 
